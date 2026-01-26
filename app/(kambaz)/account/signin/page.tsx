@@ -10,7 +10,7 @@ export default function Signin() {
         className="wd-password"
       />{" "}
       <br />
-      <Link href="dashboard" id="wd-signin-btn">
+      <Link href="/dashboard" id="wd-signin-btn">
         {" "}
         Sign in{" "}
       </Link>{" "}
