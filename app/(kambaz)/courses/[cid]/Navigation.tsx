@@ -1,39 +1,48 @@
+"use client";
+
 import Link from "next/link";
-export default function CourseNavigation() {
+import { usePathname } from "next/navigation";
+
+export default function CourseNavigation({
+  cid,
+  show,
+}: {
+  cid: string;
+  show?: boolean;
+}) {
+  const pathname = usePathname();
+
+  const links = [
+    { label: "Home", path: "home" },
+    { label: "Modules", path: "modules" },
+    { label: "Piazza", path: "piazza" },
+    { label: "Zoom", path: "zoom" },
+    { label: "Assignments", path: "assignments" },
+    { label: "Quizzes", path: "quizzes" },
+    { label: "People", path: "people/table" },
+  ];
+
   return (
-    <div id="wd-courses-navigation">
-      <Link href="/courses/1234/home" id="wd-course-home-link">
-        Home
-      </Link>
-      <br />
-      <Link href="/courses/1234/modules" id="wd-course-modules-link">
-        Modules
-      </Link>
-      <br />
-      <Link href="/courses/1234/piazza" id="wd-course-piazza-link">
-        Piazza
-      </Link>
-      <br />
-      <Link href="/courses/1234/zoom" id="wd-course-zoom-link">
-        Zoom
-      </Link>
-      <br />
-      <Link href="/courses/1234/assignments" id="wd-course-assignments-link">
-        Assignments
-      </Link>
-      <br />
-      <Link href="/courses/1234/quizzes" id="wd-course-quizzes-link">
-        Quizzes
-      </Link>
-      <br />
-      <Link href="/courses/1234/grades" id="wd-course-grades-link">
-        Grades
-      </Link>
-      <br />
-      <Link href="/courses/1234/people/table" id="wd-course-people-link">
-        People
-      </Link>
-      <br />
+    <div
+      id="wd-courses-navigation"
+      className={`wd list-group fs-5 rounded-0 ${show ? "d-block" : "d-none"}`}
+    >
+      {links.map((link) => {
+        const href = `/courses/${cid}/${link.path}`;
+        const isActive = pathname.includes(href);
+
+        return (
+          <Link
+            key={link.path}
+            href={href}
+            className={`list-group-item border-0 ${
+              isActive ? "active" : "text-danger"
+            }`}
+          >
+            {link.label}
+          </Link>
+        );
+      })}
     </div>
   );
 }

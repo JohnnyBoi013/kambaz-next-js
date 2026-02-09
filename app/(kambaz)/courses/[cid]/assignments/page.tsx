@@ -1,70 +1,142 @@
+"use client";
+
+import { FaPlus, FaSearch } from "react-icons/fa";
+import { BsGripVertical, BsThreeDotsVertical } from "react-icons/bs";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { FaCheckCircle } from "react-icons/fa";
 import Link from "next/link";
+import {
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Form,
+  FormControl,
+  InputGroup,
+} from "react-bootstrap";
 
 export default function Assignments() {
   return (
     <div id="wd-assignments">
-      <input placeholder="Search for Assignments" id="wd-search-assignment" />
-      <button id="wd-add-assignment-group">+ Group</button>
-      <button id="wd-add-assignment">+ Assignment</button>
+      {/* Controls Bar */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <InputGroup style={{ width: "300px" }}>
+          <InputGroup.Text className="bg-white">
+            <FaSearch />
+          </InputGroup.Text>
+          <FormControl placeholder="Search for Assignment" type="text" />
+        </InputGroup>
 
-      <h3 id="wd-assignments-title">
-        ASSIGNMENTS 40% of Total <button>+</button>
-      </h3>
+        <div>
+          <Button variant="secondary" className="me-2">
+            <FaPlus className="me-1" />
+            Group
+          </Button>
+          <Button variant="danger">
+            <FaPlus className="me-1" />
+            Assignment
+          </Button>
+        </div>
+      </div>
 
-      <ul id="wd-assignment-list">
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/123"
-            className="wd-assignment-link"
-          >
-            A1 - ENV + HTML
-          </Link>
-          <div>Multiple Modules | Not available until May 6 at 12:00am</div>
-          <div>Due May 13 at 11:59pm | 100 pts</div>
+      {/* Assignment List */}
+      <ul className="list-group rounded-0">
+        {/* Assignment Group Header */}
+        <li className="list-group-item p-3 bg-secondary">
+          <div className="d-flex align-items-center">
+            <BsGripVertical className="me-2 fs-3" />
+            <IoMdArrowDropdown className="me-2 fs-4" />
+            <strong>ASSIGNMENTS</strong>
+            <div className="ms-auto">
+              <span className="border border-dark rounded p-1 me-2">
+                40% of Total
+              </span>
+              <FaPlus className="me-2" />
+              <BsThreeDotsVertical />
+            </div>
+          </div>
         </li>
 
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/124"
-            className="wd-assignment-link"
-          >
-            A2 - CSS + BOOTSTRAP
-          </Link>
-          <div>Multiple Modules | Not available until May 13 at 12:00am</div>
-          <div>Due May 20 at 11:59pm | 100 pts</div>
+        {/* Assignment 1 */}
+        <li className="list-group-item p-3 border-start border-success border-4">
+          <div className="d-flex align-items-center">
+            <BsGripVertical className="me-2 fs-3" />
+            <IoMdArrowDropdown className="me-2 fs-4 text-success" />
+            <div className="flex-fill">
+              <Link
+                href="/courses/1234/assignments/1"
+                className="text-decoration-none text-dark fw-bold"
+              >
+                A1 - ENV + HTML
+              </Link>
+              <div className="text-muted small">
+                <span className="text-danger">Multiple Modules</span> |{" "}
+                <strong>Not available until</strong> May 6 at 12:00am |
+              </div>
+              <div className="text-muted small">
+                <strong>Due</strong> May 13 at 11:59pm | 100 pts
+              </div>
+            </div>
+            <div className="ms-auto d-flex align-items-center">
+              <FaCheckCircle className="text-success me-2 fs-5" />
+              <BsThreeDotsVertical />
+            </div>
+          </div>
         </li>
 
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/125"
-            className="wd-assignment-link"
-          >
-            A3 - JAVASCRIPT + DOM
-          </Link>
-          <div>Multiple Modules | Not available until May 20 at 12:00am</div>
-          <div>Due May 27 at 11:59pm | 100 pts</div>
+        {/* Assignment 2 */}
+        <li className="list-group-item p-3 border-start border-success border-4">
+          <div className="d-flex align-items-center">
+            <BsGripVertical className="me-2 fs-3" />
+            <IoMdArrowDropdown className="me-2 fs-4 text-success" />
+            <div className="flex-fill">
+              <Link
+                href="/courses/1234/assignments/2"
+                className="text-decoration-none text-dark fw-bold"
+              >
+                A2 - CSS + BOOTSTRAP
+              </Link>
+              <div className="text-muted small">
+                <span className="text-danger">Multiple Modules</span> |{" "}
+                <strong>Not available until</strong> May 13 at 12:00am |
+              </div>
+              <div className="text-muted small">
+                <strong>Due</strong> May 20 at 11:59pm | 100 pts
+              </div>
+            </div>
+            <div className="ms-auto d-flex align-items-center">
+              <FaCheckCircle className="text-success me-2 fs-5" />
+              <BsThreeDotsVertical />
+            </div>
+          </div>
         </li>
 
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/126"
-            className="wd-assignment-link"
-          >
-            A4 - REACT COMPONENTS
-          </Link>
-          <div>Multiple Modules | Not available until May 27 at 12:00am</div>
-          <div>Due Jun 3 at 11:59pm | 100 pts</div>
-        </li>
-
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/127"
-            className="wd-assignment-link"
-          >
-            A5 - NEXT.JS ROUTING
-          </Link>
-          <div>Multiple Modules | Not available until Jun 3 at 12:00am</div>
-          <div>Due Jun 10 at 11:59pm | 100 pts</div>
+        {/* Assignment 3 */}
+        <li className="list-group-item p-3 border-start border-success border-4">
+          <div className="d-flex align-items-center">
+            <BsGripVertical className="me-2 fs-3" />
+            <IoMdArrowDropdown className="me-2 fs-4 text-success" />
+            <div className="flex-fill">
+              <Link
+                href="/courses/1234/assignments/3"
+                className="text-decoration-none text-dark fw-bold"
+              >
+                A3 - JAVASCRIPT + REACT
+              </Link>
+              <div className="text-muted small">
+                <span className="text-danger">Multiple Modules</span> |{" "}
+                <strong>Not available until</strong> May 20 at 12:00am |
+              </div>
+              <div className="text-muted small">
+                <strong>Due</strong> May 27 at 11:59pm | 100 pts
+              </div>
+            </div>
+            <div className="ms-auto d-flex align-items-center">
+              <FaCheckCircle className="text-success me-2 fs-5" />
+              <BsThreeDotsVertical />
+            </div>
+          </div>
         </li>
       </ul>
     </div>
