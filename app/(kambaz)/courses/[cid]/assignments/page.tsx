@@ -7,7 +7,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button, FormControl, InputGroup } from "react-bootstrap";
-import assignments from "../../assignments.json";
+import { assignments } from "@/app/(kambaz)/database";
 
 interface Assignment {
   _id: string;
