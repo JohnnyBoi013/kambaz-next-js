@@ -4,6 +4,8 @@ import { ReactNode, useState, use } from "react";
 import CourseNavigation from "./Navigation";
 import TopBar from "../../TopBar";
 import { FaAlignJustify } from "react-icons/fa";
+import { courses } from "../../database";
+import Breadcrumb from "./Breadcrumb";
 
 export default function CoursesLayout({
   children,
@@ -13,6 +15,7 @@ export default function CoursesLayout({
   params: Promise<{ cid: string }>;
 }) {
   const { cid } = use(params);
+  const course = courses.find((course) => course._id === cid);
   const [showCourseNav, setShowCourseNav] = useState(true);
   const [showKambazNav, setShowKambazNav] = useState(false);
 
@@ -42,7 +45,7 @@ export default function CoursesLayout({
             style={{ cursor: "pointer" }}
             onClick={() => setShowCourseNav(!showCourseNav)}
           />
-          Course {cid}
+          {course?.name} &gt; <Breadcrumb />
         </h2>
         <hr />
         <div className="d-flex">

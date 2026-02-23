@@ -1,7 +1,7 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
 
 export default function CourseNavigation({
   cid,
@@ -11,15 +11,15 @@ export default function CourseNavigation({
   show?: boolean;
 }) {
   const pathname = usePathname();
-
   const links = [
-    { label: "Home", path: "home" },
-    { label: "Modules", path: "modules" },
-    { label: "Piazza", path: "piazza" },
-    { label: "Zoom", path: "zoom" },
-    { label: "Assignments", path: "assignments" },
-    { label: "Quizzes", path: "quizzes" },
-    { label: "People", path: "people/table" },
+    "Home",
+    "Modules",
+    "Piazza",
+    "Zoom",
+    "Assignments",
+    "Quizzes",
+    "Grades",
+    "People",
   ];
 
   return (
@@ -27,22 +27,22 @@ export default function CourseNavigation({
       id="wd-courses-navigation"
       className={`wd list-group fs-5 rounded-0 ${show ? "d-block" : "d-none"}`}
     >
-      {links.map((link) => {
-        const href = `/courses/${cid}/${link.path}`;
-        const isActive = pathname.includes(href);
-
-        return (
-          <Link
-            key={link.path}
-            href={href}
-            className={`list-group-item border-0 ${
-              isActive ? "active" : "text-danger"
-            }`}
-          >
-            {link.label}
-          </Link>
-        );
-      })}
+      <ListGroup>
+        {links.map((link) => {
+          const href = `/courses/${cid}/${link.charAt(0).toLowerCase() + link.slice(1)}`;
+          const isActive = pathname.includes(link);
+          return (
+            <ListGroupItem
+              key={link}
+              as={Link}
+              href={href}
+              className={`border-0 ${isActive ? "text-danger bg-white" : "text-danger bg-black"}`}
+            >
+              {link}
+            </ListGroupItem>
+          );
+        })}
+      </ListGroup>
     </div>
   );
 }

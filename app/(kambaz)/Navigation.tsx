@@ -1,57 +1,22 @@
 "use client";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import { usePathname } from "next/navigation";
-import {
-  FaUserCircle,
-  FaTachometerAlt,
-  FaBook,
-  FaCalendar,
-  FaInbox,
-  FaFlask,
-} from "react-icons/fa";
+import { IoCalendarOutline } from "react-icons/io5";
+import { AiOutlineDashboard } from "react-icons/ai";
+import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
+import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
+import Link from "next/link";
 import "./styles.css";
 
 export default function KambazNavigation({ show }: { show?: boolean }) {
   const pathname = usePathname();
-  const isActive = (path: string) => pathname.startsWith(path);
 
   const links = [
-    {
-      href: "/account",
-      icon: <FaUserCircle size={24} />,
-      label: "Account",
-      whiteIcon: true,
-    },
-    {
-      href: "/dashboard",
-      icon: <FaTachometerAlt size={24} />,
-      label: "Dashboard",
-      whiteIcon: false,
-    },
-    {
-      href: "/courses",
-      icon: <FaBook size={24} />,
-      label: "Courses",
-      whiteIcon: false,
-    },
-    {
-      href: "/calendar",
-      icon: <FaCalendar size={24} />,
-      label: "Calendar",
-      whiteIcon: false,
-    },
-    {
-      href: "/inbox",
-      icon: <FaInbox size={24} />,
-      label: "Inbox",
-      whiteIcon: false,
-    },
-    {
-      href: "/labs",
-      icon: <FaFlask size={24} />,
-      label: "Labs",
-      whiteIcon: false,
-    },
+    { label: "Dashboard", path: "/dashboard", icon: AiOutlineDashboard },
+    { label: "Courses", path: "/dashboard", icon: LiaBookSolid },
+    { label: "Calendar", path: "/Calendar", icon: IoCalendarOutline },
+    { label: "Inbox", path: "/Inbox", icon: FaInbox },
+    { label: "Labs", path: "/labs", icon: LiaCogSolid },
   ];
 
   return (
@@ -69,28 +34,29 @@ export default function KambazNavigation({ show }: { show?: boolean }) {
       >
         <img src="/images/NEU.png" width="75px" alt="Northeastern University" />
       </ListGroupItem>
+      <ListGroupItem
+        as={Link}
+        href="/account"
+        className={`text-center border-0 bg-black
+            ${pathname.includes("Account") ? "bg-white text-danger" : "bg-black text-white"}`}
+      >
+        <FaRegCircleUser
+          className={`fs-1 ${pathname.includes("Account") ? "text-danger" : "text-white"}`}
+        />
+        <br />
+        Account
+      </ListGroupItem>
       {links.map((link) => (
         <ListGroupItem
-          key={link.href}
-          className={`border-0 text-center ${
-            isActive(link.href) ? "bg-white text-danger" : "bg-black text-white"
-          }`}
-          as="a"
-          href={link.href}
-          id={`wd-${link.label.toLowerCase()}-link`}
+          key={link.path}
+          as={Link}
+          href={link.path}
+          className={`bg-black text-center border-0
+            ${pathname.includes(link.label) ? "text-danger bg-white" : "text-white bg-black"}`}
         >
-          <div
-            className={
-              isActive(link.href)
-                ? "text-danger"
-                : link.whiteIcon
-                  ? "text-white"
-                  : "text-danger"
-            }
-          >
-            {link.icon}
-          </div>
-          <div className="wd-navigation-label">{link.label}</div>
+          {link.icon({ className: "fs-1 text-danger" })}
+          <br />
+          {link.label}
         </ListGroupItem>
       ))}
     </ListGroup>

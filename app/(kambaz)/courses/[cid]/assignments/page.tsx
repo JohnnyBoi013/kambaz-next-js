@@ -5,18 +5,26 @@ import { BsGripVertical, BsThreeDotsVertical } from "react-icons/bs";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaCheckCircle } from "react-icons/fa";
 import Link from "next/link";
-import {
-  Button,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Form,
-  FormControl,
-  InputGroup,
-} from "react-bootstrap";
+import { useParams } from "next/navigation";
+import { Button, FormControl, InputGroup } from "react-bootstrap";
+import assignments from "../../assignments.json";
+
+interface Assignment {
+  _id: string;
+  title: string;
+  course: string;
+  availableDate: string;
+  dueDate: string;
+  points: number;
+  modules: string;
+}
 
 export default function Assignments() {
+  const { cid } = useParams();
+  const courseAssignments = (assignments as Assignment[]).filter(
+    (a) => a.course === cid,
+  );
+
   return (
     <div id="wd-assignments">
       {/* Controls Bar */}
@@ -58,86 +66,38 @@ export default function Assignments() {
           </div>
         </li>
 
-        {/* Assignment 1 */}
-        <li className="list-group-item p-3 border-start border-success border-4">
-          <div className="d-flex align-items-center">
-            <BsGripVertical className="me-2 fs-3" />
-            <IoMdArrowDropdown className="me-2 fs-4 text-success" />
-            <div className="flex-fill">
-              <Link
-                href="/courses/1234/assignments/1"
-                className="text-decoration-none text-dark fw-bold"
-              >
-                A1 - ENV + HTML
-              </Link>
-              <div className="text-muted small">
-                <span className="text-danger">Multiple Modules</span> |{" "}
-                <strong>Not available until</strong> May 6 at 12:00am |
+        {courseAssignments.map((assignment) => (
+          <li
+            key={assignment._id}
+            className="list-group-item p-3 border-start border-success border-4"
+          >
+            <div className="d-flex align-items-center">
+              <BsGripVertical className="me-2 fs-3" />
+              <IoMdArrowDropdown className="me-2 fs-4 text-success" />
+              <div className="flex-fill">
+                <Link
+                  href={`/courses/${cid}/assignments/${assignment._id}`}
+                  className="text-decoration-none text-dark fw-bold"
+                >
+                  {assignment.title}
+                </Link>
+                <div className="text-muted small">
+                  <span className="text-danger">{assignment.modules}</span> |{" "}
+                  <strong>Not available until</strong>{" "}
+                  {assignment.availableDate} |
+                </div>
+                <div className="text-muted small">
+                  <strong>Due</strong> {assignment.dueDate} |{" "}
+                  {assignment.points} pts
+                </div>
               </div>
-              <div className="text-muted small">
-                <strong>Due</strong> May 13 at 11:59pm | 100 pts
-              </div>
-            </div>
-            <div className="ms-auto d-flex align-items-center">
-              <FaCheckCircle className="text-success me-2 fs-5" />
-              <BsThreeDotsVertical />
-            </div>
-          </div>
-        </li>
-
-        {/* Assignment 2 */}
-        <li className="list-group-item p-3 border-start border-success border-4">
-          <div className="d-flex align-items-center">
-            <BsGripVertical className="me-2 fs-3" />
-            <IoMdArrowDropdown className="me-2 fs-4 text-success" />
-            <div className="flex-fill">
-              <Link
-                href="/courses/1234/assignments/2"
-                className="text-decoration-none text-dark fw-bold"
-              >
-                A2 - CSS + BOOTSTRAP
-              </Link>
-              <div className="text-muted small">
-                <span className="text-danger">Multiple Modules</span> |{" "}
-                <strong>Not available until</strong> May 13 at 12:00am |
-              </div>
-              <div className="text-muted small">
-                <strong>Due</strong> May 20 at 11:59pm | 100 pts
+              <div className="ms-auto d-flex align-items-center">
+                <FaCheckCircle className="text-success me-2 fs-5" />
+                <BsThreeDotsVertical />
               </div>
             </div>
-            <div className="ms-auto d-flex align-items-center">
-              <FaCheckCircle className="text-success me-2 fs-5" />
-              <BsThreeDotsVertical />
-            </div>
-          </div>
-        </li>
-
-        {/* Assignment 3 */}
-        <li className="list-group-item p-3 border-start border-success border-4">
-          <div className="d-flex align-items-center">
-            <BsGripVertical className="me-2 fs-3" />
-            <IoMdArrowDropdown className="me-2 fs-4 text-success" />
-            <div className="flex-fill">
-              <Link
-                href="/courses/1234/assignments/3"
-                className="text-decoration-none text-dark fw-bold"
-              >
-                A3 - JAVASCRIPT + REACT
-              </Link>
-              <div className="text-muted small">
-                <span className="text-danger">Multiple Modules</span> |{" "}
-                <strong>Not available until</strong> May 20 at 12:00am |
-              </div>
-              <div className="text-muted small">
-                <strong>Due</strong> May 27 at 11:59pm | 100 pts
-              </div>
-            </div>
-            <div className="ms-auto d-flex align-items-center">
-              <FaCheckCircle className="text-success me-2 fs-5" />
-              <BsThreeDotsVertical />
-            </div>
-          </div>
-        </li>
+          </li>
+        ))}
       </ul>
     </div>
   );
