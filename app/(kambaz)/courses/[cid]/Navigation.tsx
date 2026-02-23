@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
-
 export default function CourseNavigation({
   cid,
   show,
@@ -12,16 +11,15 @@ export default function CourseNavigation({
 }) {
   const pathname = usePathname();
   const links = [
-    "Home",
-    "Modules",
-    "Piazza",
-    "Zoom",
-    "Assignments",
-    "Quizzes",
-    "Grades",
-    "People",
+    { label: "Home", path: "home" },
+    { label: "Modules", path: "modules" },
+    { label: "Piazza", path: "piazza" },
+    { label: "Zoom", path: "zoom" },
+    { label: "Assignments", path: "assignments" },
+    { label: "Quizzes", path: "quizzes" },
+    { label: "Grades", path: "grades" },
+    { label: "People", path: "people/table" },
   ];
-
   return (
     <div
       id="wd-courses-navigation"
@@ -29,16 +27,16 @@ export default function CourseNavigation({
     >
       <ListGroup>
         {links.map((link) => {
-          const href = `/courses/${cid}/${link.charAt(0).toLowerCase() + link.slice(1)}`;
-          const isActive = pathname.includes(link);
+          const href = `/courses/${cid}/${link.path}`;
+          const isActive = pathname.includes(link.label.toLowerCase());
           return (
             <ListGroupItem
-              key={link}
+              key={link.label}
               as={Link}
               href={href}
               className={`border-0 ${isActive ? "text-danger bg-white" : "text-danger bg-black"}`}
             >
-              {link}
+              {link.label}
             </ListGroupItem>
           );
         })}
