@@ -1,60 +1,59 @@
 "use client";
-
-import { ReactNode, useState, use } from "react";
+import { ReactNode } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 import CourseNavigation from "./Navigation";
-import TopBar from "../../TopBar";
 import { FaAlignJustify } from "react-icons/fa";
-import { courses } from "../../database";
-import Breadcrumb from "./Breadcrumb";
+import { useState } from "react";
 
-export default function CoursesLayout({
-  children,
-  params,
-}: {
-  children: ReactNode;
-  params: Promise<{ cid: string }>;
-}) {
-  const { cid } = use(params);
-  const course = courses.find((course) => course._id === cid);
-  const [showCourseNav, setShowCourseNav] = useState(true);
-  const [showKambazNav, setShowKambazNav] = useState(false);
+export default function CoursesLayout({ children }: { children: ReactNode }) {
+  const { cid } = useParams();
+  const router = useRouter();
+  const [showNav, setShowNav] = useState(true);
+
+  const { currentUser } = useSelector(
+    (state: RootState) => state.accountReducer,
+  );
+  const courses = useSelector(
+    (state: RootState) => state.coursesReducer.courses,
+  ) as { _id: string; name: string }[];
+  const enrollmentsState = useSelector(
+    (state: RootState) => state.enrollmentsReducer,
+  );
+  const enrollments = (
+    enrollmentsState as unknown as {
+      enrollments: { user: string; course: string }[];
+    }
+  ).enrollments;
+
+  const isFaculty = currentUser?.role === "FACULTY";
+  const isEnrolled = enrollments.some(
+    (e) => e.user === currentUser?._id && e.course === cid,
+  );
+
+  if (!isFaculty && !isEnrolled) {
+    router.push("/dashboard");
+    return null;
+  }
+
+  const course = courses.find((c) => c._id === cid);
 
   return (
-    <>
-      {/* Top bar with BOTH hamburgers - only on mobile */}
-      <TopBar
-        onToggleKambaz={() => setShowKambazNav(!showKambazNav)}
-        onToggleCourse={() => setShowCourseNav(!showCourseNav)}
-        showCourseToggle={true}
-      />
-
-      <div id="wd-courses" style={{ paddingTop: "60px" }} className="d-md-none">
-        <div className="d-flex">
-          <div>
-            <CourseNavigation cid={cid} show={showCourseNav} />
-          </div>
-          <div className="flex-fill">{children}</div>
-        </div>
+    <div id="wd-courses">
+      <h2 className="text-danger">
+        <FaAlignJustify
+          className="me-4 fs-4 mb-1"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowNav(!showNav)}
+        />
+        {course?.name}
+      </h2>
+      <hr />
+      <div className="d-flex">
+        <CourseNavigation cid={cid as string} show={showNav} />
+        <div className="flex-fill">{children}</div>
       </div>
-
-      {/* Desktop layout */}
-      <div id="wd-courses" className="d-none d-md-block">
-        <h2 className="text-danger">
-          <FaAlignJustify
-            className="me-4 fs-4 mb-1"
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowCourseNav(!showCourseNav)}
-          />
-          {course?.name} &gt; <Breadcrumb />
-        </h2>
-        <hr />
-        <div className="d-flex">
-          <div>
-            <CourseNavigation cid={cid} show={showCourseNav} />
-          </div>
-          <div className="flex-fill">{children}</div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }

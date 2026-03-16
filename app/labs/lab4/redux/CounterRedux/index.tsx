@@ -1,12 +1,28 @@
 "use client";
-import { Provider } from "react-redux";
-import store from "../../store";
-import ReduxExamples from "../page";
+import { useSelector, useDispatch } from "react-redux";
+import { increment, decrement } from "./counterReducer";
+import { RootState } from "../../store";
 
-export default function Lab4() {
+export default function CounterRedux() {
+  const { count } = useSelector((state: RootState) => state.counterReducer);
+  const dispatch = useDispatch();
   return (
-    <Provider store={store}>
-      <ReduxExamples />
-    </Provider>
+    <div id="wd-counter-redux">
+      <h2>Counter Redux</h2>
+      <h3>{count}</h3>
+      <button
+        onClick={() => dispatch(increment())}
+        id="wd-counter-redux-increment-click"
+      >
+        Increment
+      </button>
+      <button
+        onClick={() => dispatch(decrement())}
+        id="wd-counter-redux-decrement-click"
+      >
+        Decrement
+      </button>
+      <hr />
+    </div>
   );
 }

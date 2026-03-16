@@ -11,7 +11,8 @@ import ArrayStateVariable from "./ArrayStateVariable";
 import ParentStateComponent from "./ParentStateComponent";
 import store from "./store";
 import { Provider } from "react-redux";
-import ReduxExamples from "./redux/ReduxExamples";
+import Link from "next/link";
+
 export default function Lab4() {
   function sayHello() {
     alert("Hello");
@@ -30,8 +31,11 @@ export default function Lab4() {
         <ObjectStateVariable />
         <ArrayStateVariable />
         <ParentStateComponent />
-        <ReduxExamples />
+        <Link href="./lab4/redux">Redux Examples</Link>
         <hr />
+        <Link href="./lab4/react-context">React Context Examples</Link>
+        <hr />
+        <Link href="./lab4/zustand">Zustand Examples</Link>
       </div>
     </Provider>
   );

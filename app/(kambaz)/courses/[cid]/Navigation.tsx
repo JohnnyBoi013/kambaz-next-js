@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
+
 export default function CourseNavigation({
   cid,
   show,
@@ -20,6 +21,7 @@ export default function CourseNavigation({
     { label: "Grades", path: "grades" },
     { label: "People", path: "people/table" },
   ];
+
   return (
     <div
       id="wd-courses-navigation"
