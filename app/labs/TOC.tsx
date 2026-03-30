@@ -65,6 +65,9 @@ export default function TOC() {
         <NavLink href="/">Kambaz</NavLink>
       </NavItem>
       <NavItem>
+        <NavLink href="https://kambaz-next-js-7epk.onrender.com">Render</NavLink>
+      </NavItem>
+      <NavItem>
         <NavLink href="https://github.com/JohnnyBoi013">My GitHub</NavLink>
       </NavItem>
     </Nav>
