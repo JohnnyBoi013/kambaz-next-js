@@ -1,0 +1,42 @@
+const assignment = {
+  id: 1,
+  title: "NodeJS Assignment",
+  description: "Create a NodeJS server with Express",
+  due: "2021-10-10",
+  completed: false,
+  score: 0,
+};
+
+export default function WorkingWithObjects(app) {
+  app.get("/lab5/assignment", (req, res) => {
+    res.json(assignment);
+  });
+
+  app.get("/lab5/assignment/title", (req, res) => {
+    res.json(assignment.title);
+  });
+
+  app.put("/lab5/assignment/title", (req, res) => {
+    const { title } = req.body;
+    assignment.title = title;
+    res.json(assignment);
+  });
+
+  app.get("/lab5/assignment/score", (req, res) => {
+    res.json(assignment.score);
+  });
+
+  app.put("/lab5/assignment/score/:score", (req, res) => {
+    assignment.score = parseInt(req.params.score);
+    res.json(assignment);
+  });
+
+  app.get("/lab5/assignment/completed", (req, res) => {
+    res.json(assignment.completed);
+  });
+
+  app.put("/lab5/assignment/completed/:completed", (req, res) => {
+    assignment.completed = req.params.completed === "true";
+    res.json(assignment);
+  });
+}

@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCurrentUser } from "../reducer";
 import { RootState } from "../../store";
 import { Button, FormControl } from "react-bootstrap";
+import { signout, updateProfile } from "../client";
 
 interface User {
   _id: string;
@@ -34,13 +35,16 @@ export default function Profile() {
     return null;
   }
 
-  const signout = () => {
+  const handleSignout = async () => {
+    await signout();
     dispatch(setCurrentUser(null));
     router.push("/account/signin");
   };
 
-  const saveProfile = () => {
-    dispatch(setCurrentUser(profile));
+  const saveProfile = async () => {
+    if (!profile) return;
+    const updated = await updateProfile(profile);
+    dispatch(setCurrentUser(updated));
   };
 
   return (
@@ -113,7 +117,7 @@ export default function Profile() {
             Save
           </Button>
           <Button
-            onClick={signout}
+            onClick={handleSignout}
             className="w-100 mb-2"
             id="wd-signout-btn"
             variant="danger"

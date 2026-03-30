@@ -5,10 +5,9 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setCurrentUser } from "../reducer";
 import { FormControl, Button } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
+import { signup } from "../client";
 
 interface NewUser {
-  _id: string;
   username: string;
   password: string;
   verifyPassword: string;
@@ -17,15 +16,10 @@ interface NewUser {
   email: string;
   dob: string;
   role: string;
-  loginId: string;
-  section: string;
-  lastActivity: string;
-  totalActivity: string;
 }
 
 export default function Signup() {
   const [user, setUser] = useState<NewUser>({
-    _id: uuidv4(),
     username: "",
     password: "",
     verifyPassword: "",
@@ -34,22 +28,23 @@ export default function Signup() {
     email: "",
     dob: "",
     role: "STUDENT",
-    loginId: "",
-    section: "",
-    lastActivity: "",
-    totalActivity: "",
   });
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const signup = () => {
+  const handleSignup = async () => {
     if (user.password !== user.verifyPassword) {
       alert("Passwords do not match!");
       return;
     }
-    const { verifyPassword, ...newUser } = user;
-    dispatch(setCurrentUser(newUser));
-    router.push("/account/profile");
+    try {
+      const { verifyPassword, ...newUser } = user;
+      const createdUser = await signup(newUser);
+      dispatch(setCurrentUser(createdUser));
+      router.push("/account/profile");
+    } catch {
+      alert("Username already taken");
+    }
   };
 
   return (
@@ -78,7 +73,7 @@ export default function Signup() {
         value={user.verifyPassword}
         onChange={(e) => setUser({ ...user, verifyPassword: e.target.value })}
       />
-      <Button id="wd-signup-btn" className="w-100 mb-3" onClick={signup}>
+      <Button id="wd-signup-btn" className="w-100 mb-3" onClick={handleSignup}>
         Signup
       </Button>
       <Link id="wd-signin-link" href="/account/signin">

@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { setCurrentUser } from "../reducer";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import * as db from "../../database";
 import { FormControl, Button } from "react-bootstrap";
+import { signin } from "../client";
 
 interface Credentials {
   username: string;
@@ -20,15 +20,14 @@ export default function Signin() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const signin = () => {
-    const user = db.users.find(
-      (u) =>
-        u.username === credentials.username &&
-        u.password === credentials.password,
-    );
-    if (!user) return;
-    dispatch(setCurrentUser(user));
-    router.push("/dashboard");
+  const handleSignin = async () => {
+    try {
+      const user = await signin(credentials);
+      dispatch(setCurrentUser(user));
+      router.push("/dashboard");
+    } catch {
+      alert("Invalid credentials");
+    }
   };
 
   return (
@@ -53,7 +52,7 @@ export default function Signin() {
         type="password"
         id="wd-password"
       />
-      <Button onClick={signin} id="wd-signin-btn" className="w-100">
+      <Button onClick={handleSignin} id="wd-signin-btn" className="w-100">
         Sign in
       </Button>
       <Link id="wd-signup-link" href="/account/signup">
