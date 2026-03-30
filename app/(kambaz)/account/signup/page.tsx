@@ -42,8 +42,17 @@ export default function Signup() {
       const createdUser = await signup(newUser);
       dispatch(setCurrentUser(createdUser));
       router.push("/account/profile");
-    } catch {
-      alert("Username already taken");
+    } catch (err: unknown) {
+      const message =
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response: { data: { message: string } } }).response?.data
+          ?.message
+          ? (err as { response: { data: { message: string } } }).response.data
+              .message
+          : "Signup failed — check that the server is running";
+      alert(message);
     }
   };
 

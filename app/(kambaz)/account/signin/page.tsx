@@ -25,8 +25,17 @@ export default function Signin() {
       const user = await signin(credentials);
       dispatch(setCurrentUser(user));
       router.push("/dashboard");
-    } catch {
-      alert("Invalid credentials");
+    } catch (err: unknown) {
+      const message =
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response: { data: { message: string } } }).response?.data
+          ?.message
+          ? (err as { response: { data: { message: string } } }).response.data
+              .message
+          : "Signin failed — check that the server is running";
+      alert(message);
     }
   };
 
