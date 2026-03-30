@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import session from "express-session";
 import Hello from "./Hello.js";
-import Lab5 from "./Lab5/index.js";
+import Lab5 from "../labs/lab5/index.js";
 import Kambaz from "./Kambaz/index.js";
 
 const app = express();
