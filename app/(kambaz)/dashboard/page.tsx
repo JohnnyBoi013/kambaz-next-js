@@ -16,10 +16,11 @@ import {
 } from "react-bootstrap";
 import {
   fetchAllCourses,
+  findMyCourses,
   createCourse,
   deleteCourse as deleteCourseServer,
   updateCourse as updateCourseServer,
-  enrollInCourse,
+  enrollIntoCourse,
   unenrollFromCourse,
 } from "../courses/client";
 
@@ -43,15 +44,8 @@ export default function Dashboard() {
   const courses = useSelector(
     (state: RootState) => state.coursesReducer.courses,
   ) as Course[];
-  const enrollmentsState = useSelector(
-    (state: RootState) => state.enrollmentsReducer,
-  );
-  const enrollments = (
-    enrollmentsState as unknown as {
-      enrollments: { _id: string; user: string; course: string }[];
-    }
-  ).enrollments;
 
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState<Set<string>>(new Set());
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [course, setCourse] = useState<Course>({
     _id: "0",
@@ -64,20 +58,32 @@ export default function Dashboard() {
     description: "New Description",
   });
 
+  const loadCourses = async () => {
+    const allCourses = await fetchAllCourses();
+    dispatch(setCourses(allCourses));
+  };
+
+  const loadEnrollments = async () => {
+    if (!currentUser) return;
+    try {
+      const myCourses = await findMyCourses();
+      setEnrolledCourseIds(new Set(myCourses.map((c: Course) => c._id)));
+    } catch {
+      setEnrolledCourseIds(new Set());
+    }
+  };
+
   useEffect(() => {
-    const loadCourses = async () => {
-      const allCourses = await fetchAllCourses();
-      dispatch(setCourses(allCourses));
-    };
     loadCourses();
   }, [dispatch]);
 
+  useEffect(() => {
+    loadEnrollments();
+  }, [currentUser]);
+
   const isFaculty = currentUser?.role === "FACULTY";
 
-  const isEnrolled = (courseId: string) =>
-    enrollments.some(
-      (e) => e.user === currentUser?._id && e.course === courseId,
-    );
+  const isEnrolled = (courseId: string) => enrolledCourseIds.has(courseId);
 
   const displayedCourses = showAllCourses
     ? courses
@@ -86,30 +92,30 @@ export default function Dashboard() {
   const handleAddCourse = async () => {
     const newCourse = await createCourse(course);
     dispatch(setCourses([...courses, newCourse]));
+    await loadEnrollments();
   };
 
   const handleDeleteCourse = async (courseId: string) => {
     await deleteCourseServer(courseId);
     dispatch(setCourses(courses.filter((c) => c._id !== courseId)));
+    await loadEnrollments();
   };
 
   const handleUpdateCourse = async () => {
-    const updated = await updateCourseServer(course._id, course);
-    dispatch(setCourses(courses.map((c) => (c._id === updated._id ? updated : c))));
+    await updateCourseServer(course._id, course);
+    await loadCourses();
   };
 
   const handleEnroll = async (courseId: string) => {
     if (!currentUser) return;
-    await enrollInCourse(currentUser._id, courseId);
-    const allCourses = await fetchAllCourses();
-    dispatch(setCourses(allCourses));
+    await enrollIntoCourse(currentUser._id, courseId);
+    await loadEnrollments();
   };
 
   const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
     await unenrollFromCourse(currentUser._id, courseId);
-    const allCourses = await fetchAllCourses();
-    dispatch(setCourses(allCourses));
+    await loadEnrollments();
   };
 
   return (

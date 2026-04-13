@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 
 export default function AccountNavigation() {
   const pathname = usePathname();
+  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
 
   const links = [
     { label: "Signin", path: "/account/signin" },
@@ -20,7 +23,6 @@ export default function AccountNavigation() {
     >
       {links.map((link) => {
         const isActive = pathname === link.path;
-
         return (
           <Link
             key={link.path}
@@ -33,6 +35,16 @@ export default function AccountNavigation() {
           </Link>
         );
       })}
+      {currentUser && currentUser.role === "ADMIN" && (
+        <Link
+          href="/account/users"
+          className={`list-group-item border-0 ${
+            pathname.endsWith("users") ? "active text-black" : "text-danger"
+          }`}
+        >
+          Users
+        </Link>
+      )}
     </div>
   );
 }

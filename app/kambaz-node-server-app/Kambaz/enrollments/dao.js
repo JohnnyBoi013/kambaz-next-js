@@ -1,30 +1,27 @@
-import { enrollments } from "../database/index.js";
+import model from "./model.js";
 import { v4 as uuidv4 } from "uuid";
 
-export const findAllEnrollments = () => enrollments;
+export const findAllEnrollments = () => model.find();
 
-export const findEnrollmentsForUser = (userId) =>
-  enrollments.filter((e) => e.user === userId);
-
-export const findEnrollmentsForCourse = (courseId) =>
-  enrollments.filter((e) => e.course === courseId);
-
-export const enrollUserInCourse = (userId, courseId) => {
-  const existing = enrollments.find(
-    (e) => e.user === userId && e.course === courseId,
-  );
-  if (existing) return existing;
-  const newEnrollment = { _id: uuidv4(), user: userId, course: courseId };
-  enrollments.push(newEnrollment);
-  return newEnrollment;
+export const findCoursesForUser = async (userId) => {
+  const enrollments = await model.find({ user: userId }).populate("course");
+  return enrollments.map((enrollment) => enrollment.course);
 };
 
-export const unenrollUserFromCourse = (userId, courseId) => {
-  const index = enrollments.findIndex(
-    (e) => e.user === userId && e.course === courseId,
-  );
-  if (index === -1) return null;
-  const deleted = enrollments[index];
-  enrollments.splice(index, 1);
-  return deleted;
+export const findUsersForCourse = async (courseId) => {
+  const enrollments = await model.find({ course: courseId }).populate("user");
+  return enrollments.map((enrollment) => enrollment.user);
 };
+
+export const enrollUserInCourse = (userId, courseId) =>
+  model.create({
+    user: userId,
+    course: courseId,
+    _id: `${userId}-${courseId}`,
+  });
+
+export const unenrollUserFromCourse = (userId, courseId) =>
+  model.deleteOne({ user: userId, course: courseId });
+
+export const unenrollAllUsersFromCourse = (courseId) =>
+  model.deleteMany({ course: courseId });

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(ls -la /c/Users/jonat/kambaz-next-js/app/\\\\\\(kambaz\\\\\\)/account/)",
+      "Bash(ls -la /c/Users/jonat/kambaz-next-js/app/\\\\\\(kambaz\\\\\\)/database/)",
+      "Bash(find \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)\" -type f -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(ls -la \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)/account/signin/\")",
+      "Bash(ls -la \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)/account/signup/\")",
+      "Bash(ls -la \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)/account/\")",
+      "Bash(test -f \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)/account/client.ts\")",
+      "Bash(test -f \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)/courses/client.ts\")",
+      "Bash(test -f \"C:\\\\Users\\\\jonat\\\\kambaz-next-js/app/\\(kambaz\\)/account/Session.tsx\")",
+      "Bash(npm install:*)",
+      "Bash(timeout 5 node index.js)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

@@ -51,23 +51,19 @@ export default function Modules() {
   }, [cid, dispatch]);
 
   const handleAddModule = async () => {
-    const newModule = await createModuleForCourse(cid as string, {
-      name: moduleName,
-      course: cid,
-    });
-    dispatch(addModule({ name: newModule.name, course: newModule.course }));
+    await createModuleForCourse(cid as string, { name: moduleName });
     const serverModules = await findModulesForCourse(cid as string);
     dispatch(setModules(serverModules));
     setModuleName("");
   };
 
   const handleDeleteModule = async (moduleId: string) => {
-    await deleteModuleServer(moduleId);
+    await deleteModuleServer(cid as string, moduleId);
     dispatch(deleteModule(moduleId));
   };
 
   const handleUpdateModule = async (module: CourseModule) => {
-    await updateModuleServer(module._id, module);
+    await updateModuleServer(cid as string, module);
     dispatch(updateModule(module));
   };
 
@@ -80,7 +76,6 @@ export default function Modules() {
       />
       <ListGroup id="wd-modules" className="rounded-0">
         {modules
-          .filter((module: CourseModule) => module.course === cid)
           .map((module: CourseModule) => (
             <ListGroupItem
               key={module._id}

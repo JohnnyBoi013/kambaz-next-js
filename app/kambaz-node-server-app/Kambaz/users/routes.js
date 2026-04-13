@@ -1,12 +1,9 @@
 import * as dao from "./dao.js";
-import { enrollments, courses } from "../database/index.js";
-import { v4 as uuidv4 } from "uuid";
 
 export default function UserRoutes(app) {
-  // Auth routes (must come before /:uid routes)
-  const signin = (req, res) => {
+  const signin = async (req, res) => {
     const { username, password } = req.body;
-    const currentUser = dao.findUserByCredentials(username, password);
+    const currentUser = await dao.findUserByCredentials(username, password);
     if (currentUser) {
       req.session.currentUser = currentUser;
       res.json(currentUser);
@@ -20,14 +17,13 @@ export default function UserRoutes(app) {
     res.sendStatus(200);
   };
 
-  const signup = (req, res) => {
-    const { username } = req.body;
-    const existingUser = dao.findUserByUsername(username);
-    if (existingUser) {
+  const signup = async (req, res) => {
+    const user = await dao.findUserByUsername(req.body.username);
+    if (user) {
       res.status(400).json({ message: "Username already taken" });
       return;
     }
-    const currentUser = dao.createUser(req.body);
+    const currentUser = await dao.createUser(req.body);
     req.session.currentUser = currentUser;
     res.json(currentUser);
   };
@@ -41,39 +37,36 @@ export default function UserRoutes(app) {
     res.json(currentUser);
   };
 
-  const updateProfile = (req, res) => {
+  const updateProfile = async (req, res) => {
     const { currentUser } = req.session;
     if (!currentUser) {
       res.status(401).json({ message: "Not signed in" });
       return;
     }
-    const updated = dao.updateUser(currentUser._id, req.body);
-    req.session.currentUser = updated;
-    res.json(updated);
+    await dao.updateUser(currentUser._id, req.body);
+    req.session.currentUser = { ...currentUser, ...req.body };
+    res.json(req.session.currentUser);
   };
 
-  // User CRUD routes
-  const findAllUsers = (req, res) => {
+  const findAllUsers = async (req, res) => {
     const { role, name } = req.query;
     if (role) {
-      res.json(dao.findUsersByRole(role));
-      return;
-    }
-    if (name) {
-      const users = dao.findAllUsers().filter(
-        (u) =>
-          u.firstName.toLowerCase().includes(name.toLowerCase()) ||
-          u.lastName.toLowerCase().includes(name.toLowerCase()),
-      );
+      const users = await dao.findUsersByRole(role);
       res.json(users);
       return;
     }
-    res.json(dao.findAllUsers());
+    if (name) {
+      const users = await dao.findUsersByPartialName(name);
+      res.json(users);
+      return;
+    }
+    const users = await dao.findAllUsers();
+    res.json(users);
   };
 
-  const findUserById = (req, res) => {
-    const { uid } = req.params;
-    const user = dao.findUserById(uid);
+  const findUserById = async (req, res) => {
+    const { userId } = req.params;
+    const user = await dao.findUserById(userId);
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -81,70 +74,29 @@ export default function UserRoutes(app) {
     res.json(user);
   };
 
-  const createUser = (req, res) => {
-    const newUser = dao.createUser(req.body);
-    res.json(newUser);
+  const createUser = async (req, res) => {
+    const user = await dao.createUser(req.body);
+    res.json(user);
   };
 
-  const updateUser = (req, res) => {
-    const { uid } = req.params;
-    const updated = dao.updateUser(uid, req.body);
-    if (!updated) {
-      res.status(404).json({ message: "User not found" });
-      return;
+  const updateUser = async (req, res) => {
+    const { userId } = req.params;
+    const userUpdates = req.body;
+    await dao.updateUser(userId, userUpdates);
+    const currentUser = req.session["currentUser"];
+    if (currentUser && currentUser._id === userId) {
+      req.session["currentUser"] = { ...currentUser, ...userUpdates };
     }
-    if (req.session.currentUser && req.session.currentUser._id === uid) {
-      req.session.currentUser = updated;
-    }
-    res.json(updated);
+    res.json(req.session["currentUser"] || { _id: userId, ...userUpdates });
   };
 
-  const deleteUser = (req, res) => {
-    const { uid } = req.params;
-    const deleted = dao.deleteUser(uid);
-    if (!deleted) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-    res.json(deleted);
+  const deleteUser = async (req, res) => {
+    const { userId } = req.params;
+    const status = await dao.deleteUser(userId);
+    res.json(status);
   };
 
-  const findCoursesForEnrolledUser = (req, res) => {
-    let { uid } = req.params;
-    if (uid === "current") {
-      const { currentUser } = req.session;
-      if (!currentUser) {
-        res.status(401).json({ message: "Not signed in" });
-        return;
-      }
-      uid = currentUser._id;
-    }
-    const userEnrollments = enrollments.filter((e) => e.user === uid);
-    const userCourses = userEnrollments
-      .map((e) => courses.find((c) => c._id === e.course))
-      .filter(Boolean);
-    res.json(userCourses);
-  };
-
-  const createCourseForUser = (req, res) => {
-    let { uid } = req.params;
-    if (uid === "current") {
-      const { currentUser } = req.session;
-      if (!currentUser) {
-        res.status(401).json({ message: "Not signed in" });
-        return;
-      }
-      uid = currentUser._id;
-    }
-    const course = req.body;
-    const newCourse = { ...course, _id: uuidv4() };
-    courses.push(newCourse);
-    const newEnrollment = { _id: uuidv4(), user: uid, course: newCourse._id };
-    enrollments.push(newEnrollment);
-    res.json(newCourse);
-  };
-
-  // Register auth routes BEFORE /:uid to avoid conflicts
+  // Register auth routes BEFORE /:userId to avoid conflicts
   app.post("/api/users/signin", signin);
   app.post("/api/users/signout", signout);
   app.post("/api/users/signup", signup);
@@ -154,11 +106,7 @@ export default function UserRoutes(app) {
   // CRUD routes
   app.get("/api/users", findAllUsers);
   app.post("/api/users", createUser);
-  app.get("/api/users/:uid", findUserById);
-  app.put("/api/users/:uid", updateUser);
-  app.delete("/api/users/:uid", deleteUser);
-
-  // Enrollment-related user routes
-  app.get("/api/users/:uid/courses", findCoursesForEnrolledUser);
-  app.post("/api/users/:uid/courses", createCourseForUser);
+  app.get("/api/users/:userId", findUserById);
+  app.put("/api/users/:userId", updateUser);
+  app.delete("/api/users/:userId", deleteUser);
 }
